@@ -15,6 +15,7 @@ consumes:
   - application/json
 produces:
   - application/json
+
 tags:
   - name: tokens
     description: Access to authorization tokens
@@ -37,6 +38,7 @@ tags:
     description: Access to invoices
   - name: reports
     description: Access to reports, like the usage report
+
 securityDefinitions:
   Authorization:
     description: Currently the only scheme supported. Requires the auth token to be passed via the `Authorization` header with a value of the format `giantswarm <token>`.

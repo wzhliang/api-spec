@@ -134,7 +134,11 @@ definitions:
         description: The owning organization's ID
       status:
         type: string
-        description: The domain's status, either `PENDING`, `VALIDATED` or `FAILED`
+        enum:
+          - PENDING
+          - VALIDATED
+          - FAILED
+        description: The domain's status
       validation_comment:
         type: string
         description: Additional info on the result of the last validation attempt
