@@ -25,8 +25,6 @@ tags:
     description: Access to organizations, members, owned clusters, invoices, usage reports etc.
   - name: clusters
     description: Access to clusters
-  - name: cluster nodes
-    description: Access to worker or master nodes of a cluster
   - name: key pairs
     description: A key pair is a unique combinations of a X.509 certificate and a private key. Key pairs are used to access the Kubernetes API of a cluster, both with `kubectl` and a web browser.
     externalDocs:
@@ -48,7 +46,7 @@ securityDefinitions:
 
 
 paths:
-  /users/:
+  "/users/":
     get:
       operationId: getUsers
       tags:
@@ -108,7 +106,7 @@ paths:
           schema:
             $ref: 'definitions.yaml#/definitions/Error'
 
-  /users/{user_id}/:
+  "/users/{user_id}/":
     get:
       operationId: getUser
       tags:
@@ -171,7 +169,7 @@ paths:
         "204":
           description: Success
 
-  /organizations/:
+  "/organizations/":
     get:
       operationId: getOrganizations
       tags:
@@ -191,7 +189,7 @@ paths:
             items:
               $ref: 'definitions.yaml#/definitions/OrganizationListItem'
 
-  /organizations/{organization_id}/:
+  "/organizations/{organization_id}/":
     get:
       operationId: getOrganization
       tags:
@@ -246,7 +244,7 @@ paths:
         "204":
           description: Success
 
-  /organizations/{organization_id}/domains/:
+  "/organizations/{organization_id}/domains/":
     get:
       operationId: getDomains
       tags:
@@ -263,7 +261,7 @@ paths:
             items:
               $ref: 'definitions.yaml#/definitions/Domain'
 
-  /organizations/{organization_id}/domains/{domain}/:
+  "/organizations/{organization_id}/domains/{domain}/":
     get:
       operationId: getDomain
       tags:
@@ -296,6 +294,7 @@ paths:
       description: This method allows adding a domain for an organization. After it has been added and validated, a domain (as well as all its sub-domains) can be used for Ingress within any cluster of the organization.
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
+        - $ref: 'parameters.yaml#/DomainPathParameter'
       responses:
         "201":
           description: Success
@@ -312,7 +311,7 @@ paths:
         "204":
           description: Success
 
-  /organizations/{organization_id}/invoices/:
+  "/organizations/{organization_id}/invoices/":
     get:
       operationId: getInvoices
       tags:
@@ -325,7 +324,7 @@ paths:
         "200":
           description: Success
 
-  /organizations/{organization_id}/invoices/{invoice_number}/:
+  "/organizations/{organization_id}/invoices/{invoice_number}/":
     get:
       operationId: getInvoice
       tags:
@@ -349,7 +348,7 @@ paths:
         "200":
           description: Success
 
-  /organizations/{organization_id}/invoices/{invoice_number}/download/:
+  "/organizations/{organization_id}/invoices/{invoice_number}/download/":
     get:
       operationId: downloadInvoices
       tags:
@@ -375,7 +374,7 @@ paths:
         "200":
           description: Success
 
-  /organizations/{organization_id}/usage-reports/:
+  "/organizations/{organization_id}/usage-reports/":
     get:
       operationId: getUsageReports
       tags:
@@ -388,7 +387,7 @@ paths:
         "200":
           description: Success
 
-  /organizations/{organization_id}/usage-reports/{id}/:
+  "/organizations/{organization_id}/usage-reports/{id}/":
     get:
       operationId: getUsageReport
       tags:
@@ -418,7 +417,7 @@ paths:
         "200":
           description: Success
 
-  /organizations/{organization_id}/usage-reports/{id}/download/:
+  "/organizations/{organization_id}/usage-reports/{id}/download/":
     get:
       operationId: downloadUsageReport
       tags:
@@ -450,26 +449,98 @@ paths:
         "200":
           description: Success
 
-  /clusters/:
+  "/defaults/cluster/":
+    get:
+      operationId: getClusterDefaults
+      tags:
+        - clusters
+      summary: Get cluster defaults
+      description: |
+        Returns default settings for new clusters.
+        The response resembles the cluster object returned when obtaining information on an existing cluster.
+
+        Attributes with the value `null` indicate that no default value exists for this attribute.
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: 'definitions.yaml#/definitions/Cluster'
+          examples:
+            application/json:
+              id: null
+              create_date: null
+              api_endpoint: null
+              name: null
+              kubernetes_version: 1.4.6
+              owner: null
+              workers:
+                - {"ram": {"size": "16 GB"}, "storage": {"size": "10 GB"}, "cpu": {"amount": 2}, "labels": {"nodetype": "hiram"}}
+                - {"ram": {"size": "2 GB"}, "storage": {"size": "10 GB"}, "cpu": {"amount": 4}, "labels": {"nodetype": "hicpu"}}
+                - {"ram": {"size": "2 GB"}, "storage": {"size": "10 GB"}, "cpu": {"amount": 4}, "labels": {"nodetype": "hicpu"}}
+              masters:
+                - {"ram": {"size": "2 GB"}, "storage": {"size": "20 GB"}, "cpu": {"amount": 2}}
+  "/clusters/":
     get:
       operationId: getClusters
       tags:
         - clusters
       summary: Get list of clusters
-      description: Lists all clusters the current user has permissions to know about.
+      description: |
+        This method returns information on all clusters a user has permission to know about.
+
+        The result is an array of highly reduced cluster objects, containing only `id`, `name`, and `create_date`.
       responses:
         "200":
           description: Success
+          schema:
+            type: array
+            items:
+              $ref: 'definitions.yaml#/definitions/ClusterListItem'
+          examples:
+            application/json:
+              - {"id": "x882ofna", "create_date": "2016-06-01T12:00:00.000Z", "name": "Development"}
+              - {"id": "j739l49x", "create_date": "2016-07-01T12:00:00.000Z", "name": "Production"}
     post:
       operationId: addCluster
+      description: |
+        This method allows to create a new cluster.
+
+        The submitted cluster object consists of some unary attributes like `name` for the name of the cluster or `kubernetes_version` for the desired Kubernetes version.
+        In addition, the following two attributes expect arrays of node configuration objects. Each array element will result in one node being created.
+
+        - `masters`: This array should have one element per master node to be created. Currently, only one master is supported. This means that, if multiple configuration objects are passed, all but the first will be ignored.
+        - `workers`: Here, one object per worker to be created is required.
+
+        Both master and worker configuration objects support the same attributes, with one exception:
+        Only worker nodes support adding labels via the `labels` attribute.
+        These labels will be available as Kubernetes metadata once the cluster is running.
+        For the master node, any labels submitted on creation will be silently ignored.
+
+        All attributes of the node configuration objects are optional. For any configuration setting that is not given on creation, the current default value will be used.
+        Default values can be obtained via the according API routes.
+
       tags:
         - clusters
       summary: Create cluster
       responses:
-        "200":
+        "201":
           description: Success
+          schema:
+            $ref: 'definitions.yaml#/definitions/Cluster'
+          examples:
+            application/json:
+              id: d93jt84h
+              create_date: "2016-07-01T12:00:00.000Z"
+              api_endpoint: https://api.d93jt84h.k8s.gigantic.io
+              name: Development Cluster
+              kubernetes_version: 1.4.6
+              owner: giantswarm
+              workers:
+                - {"ram": {"size": "16 GB"}, "storage": {"size": "10 GB"}, "cpu": {"amount": 2}, "labels": {"nodetype": "hiram"}}
+                - {"ram": {"size": "2 GB"}, "storage": {"size": "10 GB"}, "cpu": {"amount": 4}, "labels": {"nodetype": "hicpu"}}
+                - {"ram": {"size": "2 GB"}, "storage": {"size": "10 GB"}, "cpu": {"amount": 4}, "labels": {"nodetype": "hicpu"}}
 
-  /clusters/{cluster_id}/:
+  "/clusters/{cluster_id}/":
     get:
       operationId: getCluster
       tags:
@@ -506,13 +577,17 @@ paths:
       tags:
         - clusters
       summary: Delete cluster
+      description: |
+        Cluster deletion is expected to be a time-consuming task. The response to the `DELETE` request is sent immediately after the request is validated successfully. After that, the cluster is  drained and worker and master nodes get deleted.
+
+        (TODO: Explain how users can continue to check the cluster state using `GET /clusters/{cluster_id}/` while the deletion is in progress.)
       parameters:
         - $ref: 'parameters.yaml#/ClusterIdPathParameter'
       responses:
-        "204":
+        "202":
           description: Success
 
-  /clusters/{cluster_id}/key-pairs/:
+  "/clusters/{cluster_id}/key-pairs/":
     get:
       operationId: getKeyPairs
       tags:
@@ -534,7 +609,7 @@ paths:
         "200":
           description: Success
 
-  /clusters/{cluster_id}/key-pairs/{id}/:
+  "/clusters/{cluster_id}/key-pairs/{id}/":
     get:
       operationId: getKeyPair
       tags:
@@ -582,168 +657,7 @@ paths:
         "204":
           description: Success
 
-  /clusters/{cluster_id}/workers/:
-    get:
-      operationId: getWorkers
-      tags:
-        - cluster nodes
-      summary: Get list of worker nodes for a cluster
-      parameters:
-        - $ref: 'parameters.yaml#/ClusterIdPathParameter'
-      responses:
-        "200":
-          description: Success
-    post:
-      operationId: addWorker
-      tags:
-        - cluster nodes
-      summary: Add workers to a cluster
-      parameters:
-        - $ref: 'parameters.yaml#/ClusterIdPathParameter'
-      responses:
-        "204":
-          description: Success
-
-  /clusters/{cluster_id}/workers/{worker_id}/:
-    get:
-      operationId: getWorker
-      tags:
-        - cluster nodes
-      summary: Get info on a worker node
-      parameters:
-        - $ref: 'parameters.yaml#/ClusterIdPathParameter'
-        - name: worker_id
-          in: path
-          required: true
-          type: string
-      responses:
-        "200":
-          description: Success
-    head:
-      operationId: checkWorker
-      tags:
-        - cluster nodes
-      summary: Check worker node existence and access
-      parameters:
-        - $ref: 'parameters.yaml#/ClusterIdPathParameter'
-        - name: worker_id
-          in: path
-          required: true
-          type: string
-      responses:
-        "200":
-          description: Success
-    patch:
-      operationId: updateWorker
-      tags:
-        - cluster nodes
-      summary: Update worker node details
-      description: The request body must contain a JSON Merge Patch document as described in [RFC 7396](https://tools.ietf.org/html/rfc7396)
-      parameters:
-        - $ref: 'parameters.yaml#/ClusterIdPathParameter'
-        - name: worker_id
-          in: path
-          required: true
-          type: string
-      responses:
-        "204":
-          description: Success
-    delete:
-      operationId: deleteWorker
-      tags:
-        - cluster nodes
-      summary: Delete a worker node
-      parameters:
-        - $ref: 'parameters.yaml#/ClusterIdPathParameter'
-        - name: worker_id
-          in: path
-          required: true
-          type: string
-      responses:
-        "204":
-          description: Success
-
-  /clusters/{cluster_id}/masters/:
-    get:
-      operationId: getMasters
-      tags:
-        - cluster nodes
-      summary: Get list of master nodes for a cluster
-      parameters:
-        - $ref: 'parameters.yaml#/ClusterIdPathParameter'
-      responses:
-        "200":
-          description: Success
-    post:
-      operationId: addMaster
-      tags:
-        - cluster nodes
-      summary: Add masters to a cluster
-      parameters:
-        - $ref: 'parameters.yaml#/ClusterIdPathParameter'
-      responses:
-        "204":
-          description: Success
-
-  /clusters/{cluster_id}/masters/{master_id}/:
-    get:
-      operationId: getMaster
-      tags:
-        - cluster nodes
-      summary: Get info on a master node
-      parameters:
-        - $ref: 'parameters.yaml#/ClusterIdPathParameter'
-        - name: master_id
-          in: path
-          required: true
-          type: string
-      responses:
-        "200":
-          description: Success
-    head:
-      operationId: checkMaster
-      tags:
-        - cluster nodes
-      summary: Check master node existence and access
-      parameters:
-        - $ref: 'parameters.yaml#/ClusterIdPathParameter'
-        - name: master_id
-          in: path
-          required: true
-          type: string
-      responses:
-        "200":
-          description: Success
-    patch:
-      operationId: updateMaster
-      tags:
-        - cluster nodes
-      summary: Update master node details
-      description: The request body must contain a JSON Merge Patch document as described in [RFC 7396](https://tools.ietf.org/html/rfc7396)
-      parameters:
-        - $ref: 'parameters.yaml#/ClusterIdPathParameter'
-        - name: master_id
-          in: path
-          required: true
-          type: string
-      responses:
-        "204":
-          description: Success
-    delete:
-      operationId: deleteMaster
-      tags:
-        - cluster nodes
-      summary: Delete a master node
-      parameters:
-        - $ref: 'parameters.yaml#/ClusterIdPathParameter'
-        - name: master_id
-          in: path
-          required: true
-          type: string
-      responses:
-        "204":
-          description: Success
-  /tokens/:
+  "/tokens/":
     get:
       operationId: getTokens
       tags:
@@ -763,7 +677,7 @@ paths:
         "201":
           description: Created
 
-  /tokens/info/:
+  "/tokens/info/":
     post:
       operationId: getToken
       tags:
@@ -774,7 +688,7 @@ paths:
         "200":
           description: Success
 
-  /tokens/delete/:
+  "/tokens/delete/":
     post:
       operationId: deleteToken
       tags:

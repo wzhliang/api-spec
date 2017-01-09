@@ -1,5 +1,108 @@
 definitions:
 
+  Cluster:
+    type: object
+    required:
+      - id
+    properties:
+      name:
+        type: string
+        description: User-defined name for the cluster
+      kubernetes_version:
+        type: string
+        description: Kubernetes version, e. g. 1.4.6
+      owner:
+        type: string
+        description: ID of the organization owning the cluster
+      workers:
+        type: array
+        description: Worker node objects
+        items:
+          $ref: '#/definitions/Node'
+      masters:
+        type: array
+        description: Master node objects
+        items:
+          $ref: '#/definitions/Node'
+
+  Node:
+    type: object
+    properties:
+      memory:
+        type: object
+        properties:
+          size_gb:
+            type: string
+            description: Memory size in GB
+      storage:
+        type: object
+        properties:
+          size_gb:
+            type: string
+            description: Storage size in GB
+      cpu:
+        type: object
+        properties:
+          cores:
+            type: integer
+            description: Number of CPU cores
+      labels:
+        description: Arbitrary labels to be applied as Kubernetes metadata
+        type: object
+        additionalProperties:
+          type: string
+
+  ClusterListItem:
+    type: object
+    required:
+      - id
+      - name
+      - create_date
+    properties:
+      id:
+        type: string
+        description: Cluster ID
+      name:
+        type: string
+        description: Cluster name
+      create_date:
+        type: string
+        format: date-time
+        description: Creation date/time
+
+  Domain:
+    type: object
+    required:
+      - domain
+    properties:
+      creation_date:
+        type: string
+        format: date-time
+        description: Creation date and time
+      domain:
+        type: string
+        description: Domain name
+      last_validation_attempt_date:
+        type: string
+        format: date-time
+        description: Last date/time the domain has been tried to validate
+      organization:
+        type: string
+        description: The owning organization's ID
+      status:
+        type: string
+        enum:
+          - PENDING
+          - VALIDATED
+          - FAILED
+        description: The domain's status
+      validation_comment:
+        type: string
+        description: Additional info on the result of the last validation attempt
+      validation_token:
+        type: string
+        description: Credentials for the validation of this domain
+
   # Common error object
   Error:
     type: object
@@ -55,7 +158,6 @@ definitions:
   # Model for updating a user
   UpdateUser:
     type: object
-    required: []
     properties:
       email:
         type: string
@@ -114,34 +216,3 @@ definitions:
       role:
         type: string
         description: Role name, e. g. `OWNER`, `MEMBER`
-
-  Domain:
-    type: object
-    properties:
-      creation_date:
-        type: string
-        format: date-time
-        description: Creation date and time
-      domain:
-        type: string
-        description: Domain name
-      last_validation_attempt_date:
-        type: string
-        format: date-time
-        description: Last date/time the domain has been tried to validate
-      organization:
-        type: string
-        description: The owning organization's ID
-      status:
-        type: string
-        enum:
-          - PENDING
-          - VALIDATED
-          - FAILED
-        description: The domain's status
-      validation_comment:
-        type: string
-        description: Additional info on the result of the last validation attempt
-      validation_token:
-        type: string
-        description: Credentials for the validation of this domain
