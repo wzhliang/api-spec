@@ -5,7 +5,7 @@
 ReDoc renders pretty useful HTML-based documentation. Use this command to launch a server locally, from the root directory of this repository:
 
 ```nohighlight
-python -m SimpleHTTPServer 8000
+make redoc
 ```
 
 Then open [`http://localhost:8000/redoc/`](http://localhost:8000/redoc/).
@@ -21,3 +21,17 @@ Then open [`http://localhost:8000/redoc/`](http://localhost:8000/redoc/).
 - Indent using spaces, not tabs
 - 2 spaces per indentation level
 - avoid quotes where possible
+
+## API Spec Development
+
+Modifying the spec is easy: Simply edit these files:
+
+- `spec.yaml`:main file
+- `definitions.yaml`: defines models used in request and response specs
+- `parameters.yaml`: defines parameters used in requests
+
+### Validating
+
+The Makefile provides the `make validate` target.
+
+You need the [Swagger CLI](https://www.npmjs.com/package/swagger-cli) installed, which you can install via `npm install -g swagger-cli`.
