@@ -618,12 +618,12 @@ paths:
       description: |
         Cluster deletion is expected to be a time-consuming task. The response to the `DELETE` request is sent immediately after the request is validated successfully. After that, the cluster is  drained and worker and master nodes get deleted.
 
-        (TODO: Explain how users can continue to check the cluster state using `GET /clusters/{cluster_id}/` while the deletion is in progress.)
+        (TODO Explain how users can continue to check the cluster state using `GET /clusters/{cluster_id}/` while the deletion is in progress.)
       parameters:
         - $ref: 'parameters.yaml#/ClusterIdPathParameter'
       responses:
         "202":
-          description: Success
+          description: Accepted
 
   "/clusters/{cluster_id}/key-pairs/":
     get:
