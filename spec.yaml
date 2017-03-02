@@ -36,6 +36,10 @@ tags:
     description: Access to invoices
   - name: reports
     description: Access to reports, like the usage report
+  - name: speconly
+    description: This part is currently a specification in development, but not yet available.
+  - name: implemented
+    description: This is implemented as specced
 
 securityDefinitions:
   Authorization:
@@ -51,6 +55,7 @@ paths:
       operationId: getUsers
       tags:
         - users
+        - speconly
       summary: Get list of users
       description: Fetch list of users. The result depends on the permissions of the user. To find a user account matching a certain email address, the `email` query parameter can be used. Only an exact match will be returned.
       parameters:
@@ -82,6 +87,7 @@ paths:
       operationId: addUser
       tags:
         - users
+        - speconly
       summary: Create user
       parameters:
         - name: user
@@ -111,6 +117,7 @@ paths:
       operationId: getUser
       tags:
         - users
+        - speconly
       summary: Get user details
       parameters:
         - $ref: 'parameters.yaml#/UserIdPathParameter'
@@ -132,6 +139,7 @@ paths:
       operationId: checkUser
       tags:
         - users
+        - speconly
       summary: Check user existence
       description: This method allows to check if a user with the given `user_id` exists and if the current user has access to it.
       parameters:
@@ -145,6 +153,7 @@ paths:
       operationId: updateUser
       tags:
         - users
+        - speconly
       summary: Update user
       description: This method allows to modify certain user attributes. The request body must contain a JSON Merge Patch document as described in [RFC 7396](https://tools.ietf.org/html/rfc7396).
       parameters:
@@ -162,6 +171,7 @@ paths:
       operationId: deleteUser
       tags:
         - users
+        - speconly
       summary: Delete user
       parameters:
         - $ref: 'parameters.yaml#/UserIdPathParameter'
@@ -174,6 +184,7 @@ paths:
       operationId: getOrganizations
       tags:
         - organizations
+        - speconly
       summary: Get list of organizations
       parameters:
       - name: name
@@ -194,6 +205,7 @@ paths:
       operationId: getOrganization
       tags:
         - organizations
+        - speconly
       summary: Get organization details
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
@@ -206,6 +218,7 @@ paths:
       operationId: checkOrganization
       tags:
         - organizations
+        - speconly
       summary: Check organization existence
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
@@ -216,6 +229,7 @@ paths:
       operationId: addOrganization
       tags:
         - organizations
+        - speconly
       summary: Create organization
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
@@ -226,6 +240,7 @@ paths:
       operationId: updateOrganization
       tags:
         - organizations
+        - speconly
       summary: Update organization
       description: The request body must contain a JSON Merge Patch document as described in [RFC 7396](https://tools.ietf.org/html/rfc7396)
       parameters:
@@ -237,6 +252,7 @@ paths:
       operationId: deleteOrganization
       tags:
         - organizations
+        - speconly
       summary: Delete organization
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
@@ -249,6 +265,7 @@ paths:
       operationId: getDomains
       tags:
         - domains
+        - speconly
       summary: Get list of domains
       description: Returns a list of domains belonging to the organization specified via `organization_id`.
       parameters:
@@ -266,6 +283,7 @@ paths:
       operationId: getDomain
       tags:
         - domains
+        - speconly
       summary: Get domain details
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
@@ -279,6 +297,7 @@ paths:
       operationId: checkDomain
       tags:
         - domains
+        - speconly
       summary: Check domain existence
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
@@ -290,6 +309,7 @@ paths:
       operationId: addDomain
       tags:
         - domains
+        - speconly
       summary: Add domain
       description: This method allows adding a domain for an organization. After it has been added and validated, a domain (as well as all its sub-domains) can be used for Ingress within any cluster of the organization.
       parameters:
@@ -303,6 +323,7 @@ paths:
       operationId: deleteDomain
       tags:
         - domains
+        - speconly
       summary: Delete domain
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
@@ -316,6 +337,7 @@ paths:
       operationId: getInvoices
       tags:
         - invoices
+        - speconly
       summary: Get list of invoices
       description: Returns a list of invoices for the organization specified via `organization_id`.
       parameters:
@@ -329,6 +351,7 @@ paths:
       operationId: getInvoice
       tags:
         - invoices
+        - speconly
       summary: Get invoice details
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
@@ -340,6 +363,7 @@ paths:
       operationId: checkInvoice
       tags:
         - invoices
+        - speconly
       summary: Check invoice existence
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
@@ -353,6 +377,7 @@ paths:
       operationId: downloadInvoices
       tags:
         - invoices
+        - speconly
       summary: Download invoice document
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
@@ -366,6 +391,7 @@ paths:
       operationId: checkInvoiceDownload
       tags:
         - invoices
+        - speconly
       summary: Check invoice document existence
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
@@ -379,6 +405,7 @@ paths:
       operationId: getUsageReports
       tags:
         - reports
+        - speconly
       summary: Get list of reports
       description: Returns a list of reports for the organization specified via `organization_id`.
       parameters:
@@ -392,6 +419,7 @@ paths:
       operationId: getUsageReport
       tags:
         - reports
+        - speconly
       summary: Get details on usage report
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
@@ -406,6 +434,7 @@ paths:
       operationId: checkUsageReport
       tags:
         - reports
+        - speconly
       summary: Check usage report existence and access
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
@@ -422,6 +451,7 @@ paths:
       operationId: downloadUsageReport
       tags:
         - reports
+        - speconly
       summary: Download usage report
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
@@ -438,6 +468,7 @@ paths:
       operationId: checkUsageReportDownload
       tags:
         - reports
+        - speconly
       summary: Check usage report download existence and access
       parameters:
         - $ref: 'parameters.yaml#/OrganizationIdPathParameter'
@@ -454,6 +485,7 @@ paths:
       operationId: getClusterDefaults
       tags:
         - clusters
+        - speconly
       summary: Get cluster defaults
       description: |
         Returns default settings for new clusters.
@@ -484,6 +516,7 @@ paths:
       operationId: getClusters
       tags:
         - clusters
+        - speconly
       summary: Get list of clusters
       description: |
         This method returns information on all clusters a user has permission to know about.
@@ -521,6 +554,7 @@ paths:
 
       tags:
         - clusters
+        - implemented
       summary: Create cluster
       responses:
         "201":
@@ -545,6 +579,7 @@ paths:
       operationId: getCluster
       tags:
         - clusters
+        - implemented
       summary: Get cluster details
       parameters:
         - $ref: 'parameters.yaml#/ClusterIdPathParameter'
@@ -555,6 +590,7 @@ paths:
       operationId: checkCluster
       tags:
         - clusters
+        - speconly
       summary: Check cluster existence
       parameters:
         - $ref: 'parameters.yaml#/ClusterIdPathParameter'
@@ -565,6 +601,7 @@ paths:
       operationId: updateCluster
       tags:
         - clusters
+        - speconly
       summary: Update cluster
       description: Update details of a cluster, e. g. the cluster name. The request body must contain a JSON Merge Patch document as described in [RFC 7396](https://tools.ietf.org/html/rfc7396)
       parameters:
@@ -576,6 +613,7 @@ paths:
       operationId: deleteCluster
       tags:
         - clusters
+        - speconly
       summary: Delete cluster
       description: |
         Cluster deletion is expected to be a time-consuming task. The response to the `DELETE` request is sent immediately after the request is validated successfully. After that, the cluster is  drained and worker and master nodes get deleted.
@@ -592,6 +630,7 @@ paths:
       operationId: getKeyPairs
       tags:
         - key pairs
+        - speconly
       summary: Get list of key pairs
       parameters:
         - $ref: 'parameters.yaml#/ClusterIdPathParameter'
@@ -602,6 +641,7 @@ paths:
       operationId: addKeyPair
       tags:
         - key pairs
+        - speconly
       summary: Add key pair
       parameters:
         - $ref: 'parameters.yaml#/ClusterIdPathParameter'
@@ -614,6 +654,7 @@ paths:
       operationId: getKeyPair
       tags:
         - key pairs
+        - speconly
       summary: Get  key pair details
       description: This method returns metadata on a key pair. However it *does not* return the actual certificate and private key data, which can only be accessed on key pair creation.
       parameters:
@@ -630,6 +671,7 @@ paths:
       operationId: checkKeyPair
       tags:
         - key pairs
+        - speconly
       summary: Check key pair existence
       parameters:
         - $ref: 'parameters.yaml#/ClusterIdPathParameter'
@@ -645,6 +687,7 @@ paths:
       operationId: deleteKeyPair
       tags:
         - key pairs
+        - speconly
       summary: Revoke key pair
       parameters:
         - $ref: 'parameters.yaml#/ClusterIdPathParameter'
@@ -662,6 +705,7 @@ paths:
       operationId: getTokens
       tags:
         - tokens
+        - speconly
       summary: Get list of tokens
       description: This methods returns a list of tokens the current user has access to.
       responses:
@@ -671,6 +715,7 @@ paths:
       operationId: addToken
       tags:
         - tokens
+        - speconly
       summary: Create token
       description: This method allows to create a new token to be used for a client session or API access.
       responses:
@@ -682,6 +727,7 @@ paths:
       operationId: getToken
       tags:
         - tokens
+        - speconly
       summary: Get token details
       description: For security reasons, information on a token is queried using `POST` requests with JSON request body.
       responses:
@@ -693,6 +739,7 @@ paths:
       operationId: deleteToken
       tags:
         - tokens
+        - speconly
       summary: Delete token
       description: |
         Deletes a token. In a consequence, this token can no longer be used to authenticate requests.
